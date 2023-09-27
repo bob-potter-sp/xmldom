@@ -29,18 +29,54 @@ export class NodeImpl extends DummyNode {
   static readonly DOCUMENT_FRAGMENT_NODE = NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
   static readonly NOTATION_NODE = NodeTypeTS.NOTATION_NODE;
 
-  readonly ELEMENT_NODE = NodeTypeTS.ELEMENT_NODE;
-  readonly ATTRIBUTE_NODE = NodeTypeTS.ATTRIBUTE_NODE;
-  readonly TEXT_NODE = NodeTypeTS.TEXT_NODE;
-  readonly CDATA_SECTION_NODE = NodeTypeTS.CDATA_SECTION_NODE;
-  readonly ENTITY_REFERENCE_NODE = NodeTypeTS.ENTITY_REFERENCE_NODE;
-  readonly ENTITY_NODE = NodeTypeTS.ENTITY_NODE;
-  readonly PROCESSING_INSTRUCTION_NODE = NodeTypeTS.PROCESSING_INSTRUCTION_NODE;
-  readonly COMMENT_NODE = NodeTypeTS.COMMENT_NODE;
-  readonly DOCUMENT_NODE = NodeTypeTS.DOCUMENT_NODE;
-  readonly DOCUMENT_TYPE_NODE = NodeTypeTS.DOCUMENT_TYPE_NODE;
-  readonly DOCUMENT_FRAGMENT_NODE = NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
-  readonly NOTATION_NODE = NodeTypeTS.NOTATION_NODE;
+  //readonly ELEMENT_NODE = NodeTypeTS.ELEMENT_NODE;
+  get ELEMENT_NODE() {
+    return NodeTypeTS.ELEMENT_NODE;
+  }
+  //readonly ATTRIBUTE_NODE = NodeTypeTS.ATTRIBUTE_NODE;
+  get ATTRIBUTE_NODE() {
+    return NodeTypeTS.ATTRIBUTE_NODE;
+  }
+  //readonly TEXT_NODE = NodeTypeTS.TEXT_NODE;
+  get TEXT_NODE() {
+    return NodeTypeTS.TEXT_NODE;
+  }
+  //readonly CDATA_SECTION_NODE = NodeTypeTS.CDATA_SECTION_NODE;
+  get CDATA_SECTION_NODE() {
+    return NodeTypeTS.CDATA_SECTION_NODE;
+  }
+  //readonly ENTITY_REFERENCE_NODE = NodeTypeTS.ENTITY_REFERENCE_NODE;
+  get ENTITY_REFERENCE_NODE() {
+   return NodeTypeTS.ENTITY_REFERENCE_NODE;
+  }
+  //readonly ENTITY_NODE = NodeTypeTS.ENTITY_NODE;
+  get ENTITY_NODE() {
+    return NodeTypeTS.ENTITY_NODE;
+  }
+  //readonly PROCESSING_INSTRUCTION_NODE = NodeTypeTS.PROCESSING_INSTRUCTION_NODE;
+  get PROCESSING_INSTRUCTION_NODE() {
+    return NodeTypeTS.PROCESSING_INSTRUCTION_NODE;
+  }
+  //readonly COMMENT_NODE = NodeTypeTS.COMMENT_NODE;
+  get COMMENT_NODE() {
+   return NodeTypeTS.COMMENT_NODE;
+  }
+  //readonly DOCUMENT_NODE = NodeTypeTS.DOCUMENT_NODE;
+  get DOCUMENT_NODE() {
+   return NodeTypeTS.DOCUMENT_NODE;
+  }
+  //readonly DOCUMENT_TYPE_NODE = NodeTypeTS.DOCUMENT_TYPE_NODE;
+  get DOCUMENT_TYPE_NODE() {
+   return NodeTypeTS.DOCUMENT_TYPE_NODE;
+  }
+  //readonly DOCUMENT_FRAGMENT_NODE = NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
+  get DOCUMENT_FRAGMENT_NODE() {
+   return NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
+  }
+  //readonly NOTATION_NODE = NodeTypeTS.NOTATION_NODE;
+  get NOTATION_NODE() {
+   return NodeTypeTS.NOTATION_NODE;
+  }
 
   static readonly DOCUMENT_POSITION_CONTAINED_BY = DocumentPositionTS.CONTAINED_BY;
   static readonly DOCUMENT_POSITION_CONTAINS = DocumentPositionTS.CONTAINS;
@@ -49,12 +85,30 @@ export class NodeImpl extends DummyNode {
   static readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
   static readonly DOCUMENT_POSITION_PRECEDING = DocumentPositionTS.PRECEDING;
 
-  readonly DOCUMENT_POSITION_CONTAINED_BY = DocumentPositionTS.CONTAINED_BY;
-  readonly DOCUMENT_POSITION_CONTAINS = DocumentPositionTS.CONTAINS;
-  readonly DOCUMENT_POSITION_DISCONNECTED = DocumentPositionTS.DISCONNECTED;
-  readonly DOCUMENT_POSITION_FOLLOWING = DocumentPositionTS.FOLLOWING;
-  readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
-  readonly DOCUMENT_POSITION_PRECEDING = DocumentPositionTS.PRECEDING;
+  //readonly DOCUMENT_POSITION_CONTAINED_BY = DocumentPositionTS.CONTAINED_BY;
+  get DOCUMENT_POSITION_CONTAINED_BY() {
+    return DocumentPositionTS.CONTAINED_BY;
+  }
+  //readonly DOCUMENT_POSITION_CONTAINS = DocumentPositionTS.CONTAINS;
+  get DOCUMENT_POSITION_CONTAINS() {
+   return DocumentPositionTS.CONTAINS;
+  }
+  //readonly DOCUMENT_POSITION_DISCONNECTED = DocumentPositionTS.DISCONNECTED;
+  get DOCUMENT_POSITION_DISCONNECTED() {
+   return DocumentPositionTS.DISCONNECTED;
+  }
+  //readonly DOCUMENT_POSITION_FOLLOWING = DocumentPositionTS.FOLLOWING;
+  get DOCUMENT_POSITION_FOLLOWING() {
+   return DocumentPositionTS.FOLLOWING;
+  }
+  //readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
+  get DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC() {
+   return DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
+  }
+  //readonly DOCUMENT_POSITION_PRECEDING = DocumentPositionTS.PRECEDING;
+  get DOCUMENT_POSITION_PRECEDING() {
+   return DocumentPositionTS.PRECEDING;
+  }
 
   observers: RegisteredObserver[] = [];
 
