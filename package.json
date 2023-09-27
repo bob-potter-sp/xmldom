@@ -64,7 +64,8 @@
     "test": "mocha --require ts-node/register test/**/*.ts",
     "lint": "tslint --project ./",
     "build": "tsc",
-    "prepublishOnly": "npm run lint && npm run build && npm test"
+    "prepublishOnly": "npm run lint && npm run build && npm test",
+    "prepare": "npm run build"
   },
   "repository": {
     "type": "git",
