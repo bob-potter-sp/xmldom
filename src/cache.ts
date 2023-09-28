@@ -1,4 +1,4 @@
-var stringCache: Record<string,string>;
+var stringCache: Record<string,string> = {};
 var stringCount = 0;
 
 export function intern(s: string): string {
