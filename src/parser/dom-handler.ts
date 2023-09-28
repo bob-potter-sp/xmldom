@@ -14,11 +14,11 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
     this.strCache = {};
   }
 
-  inter(s: string): string {
-    if (stringCache[s] == undefined) {
-      stringCache[s] = s;
+  intern(s: string): string {
+    if (this.strCache[s] == undefined) {
+      this.strCache[s] = s;
     }
-    return stringCache[s];
+    return strCache[s];
   }
 
   startDocument() {
