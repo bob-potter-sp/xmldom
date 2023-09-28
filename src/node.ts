@@ -9,6 +9,15 @@ import { NodeFilterTS, VisibleNamespaces } from './types';
 import { asChildNode, isAttr, isDocument, isElement, isText } from './utils';
 import { DocumentPositionTS } from './document-position';
 
+class Relations {
+  firstChild: ChildNode | null;
+  lastChild: ChildNode | null;
+  previousSibling: ChildNode | null;
+  nextSibling: ChildNode | null;
+  parentNode: (Node & ParentNode) | null;
+  childNodes: NodeListOf<ChildNode>;
+}
+
 /**
  * @see http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247
  */
@@ -26,6 +35,22 @@ export class NodeImpl extends DummyNode {
   static readonly DOCUMENT_TYPE_NODE = NodeTypeTS.DOCUMENT_TYPE_NODE;
   static readonly DOCUMENT_FRAGMENT_NODE = NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
   static readonly NOTATION_NODE = NodeTypeTS.NOTATION_NODE;
+
+  _relations: Relations | null = null;
+
+  get firstChild(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.firstChild;
+  }
+
+  set firstChild(firstChild: ChildNode | null) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.firstChild = firstChild;
+  }
 
   //readonly ELEMENT_NODE = NodeTypeTS.ELEMENT_NODE;
   get ELEMENT_NODE() {
@@ -110,7 +135,7 @@ export class NodeImpl extends DummyNode {
 
   nodeType: number;
   nodeName: string;
-  firstChild: ChildNode | null = null;
+  //firstChild: ChildNode | null = null;
   lastChild: ChildNode | null = null;
   previousSibling: ChildNode | null = null;
   nextSibling: ChildNode | null = null;
