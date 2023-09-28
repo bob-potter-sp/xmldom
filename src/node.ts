@@ -76,6 +76,9 @@ export class NodeImpl extends DummyNode {
 
   set previousSibling(previousSibling: ChildNode | null) {
     if (this._relations == null) {
+      if (previousSibling == null) {
+        return;
+      }
       this._relations = new Relations();
     }
     this._relations.previousSibling = previousSibling;
@@ -90,6 +93,9 @@ export class NodeImpl extends DummyNode {
 
   set nextSibling(nextSibling: ChildNode | null) {
     if (this._relations == null) {
+      if (nextSibling == null) {
+        return;
+      }
       this._relations = new Relations();
     }
     this._relations.nextSibling = nextSibling;
