@@ -428,10 +428,9 @@ function parseElementStartPart(
 
 var prefixCache: Map<string,string> = new Map();
 var prefixCount = 0;
-
 function getPrefix(prefix: string): string {
   prefixCount += 1;
-  if (prefixCount % 1000 == 0) {
+  if (prefixCount % 100_000 == 0) {
     console.log(`prefix hits ${prefixCount}`);
   }
   if (!prefixCache.has(prefix)) {
@@ -439,6 +438,20 @@ function getPrefix(prefix: string): string {
     console.log(`prefixCache ${prefixCache.size}`);
   }
   return prefixCache.get(prefix)!;
+}
+
+var localNameCache: Map<string,string> = new Map();
+var localNameCount = 0;
+function getLocalName(localName: string): string {
+  localNameCount += 1;
+  if (localNameCount % 10_000 == 0) {
+    console.log(`local name hits ${localNameCount}`);
+  }
+  if (!localNameCache.has(localName)) {
+    localNameCache.set(localName, localName);
+    console.log(`localNameCache ${localNameCache.size}`);
+  }
+  return localNameCache.get(localName)!;
 }
 
 /**
@@ -461,10 +474,10 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
     let nsPrefix: string | false;
     if (nsp > 0) {
       prefix = a.prefix = getPrefix(qName.slice(0, nsp));
-      localName = qName.slice(nsp + 1);
+      localName = getLocalName(qName.slice(nsp + 1));
       nsPrefix = prefix === 'xmlns' && localName;
     } else {
-      localName = qName;
+      localName = getLocalName(qName);
       prefix = null;
       nsPrefix = qName === 'xmlns' && '';
     }
@@ -503,10 +516,10 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
   nsp = tagName.indexOf(':');
   if (nsp > 0) {
     prefix = el.prefix = getPrefix(tagName.slice(0, nsp));
-    localName = el.localName = tagName.slice(nsp + 1);
+    localName = el.localName = getLocalName(tagName.slice(nsp + 1));
   } else {
     prefix = null; // important!!
-    localName = el.localName = tagName;
+    localName = el.localName = getLocalName(tagName);
   }
   // no prefix element has default namespace
   const ns = (el.uri = currentNSMap[prefix || '']);
