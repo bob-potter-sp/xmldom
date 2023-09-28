@@ -8,7 +8,7 @@ declare global {
   type EntityReference = Node;
 
   interface Element {
-    _nsMap: Record<string, string>;
+    _nsMap: Record<string, string> | null;
   }
 
   interface DocumentType {
