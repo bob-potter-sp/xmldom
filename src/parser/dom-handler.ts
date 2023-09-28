@@ -6,10 +6,24 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
   doc: MutableDocument;
   locator: Locator;
   currentElement: Node | null;
+  strCache: Record<string,string> = {};
 
   constructor() {
     this.cdata = false;
     this.currentElement = null;
+  }
+
+  inter(s: string): string {
+    if (this.strCache[s] == undefined) {
+      this.strCache[s] = s;
+    }
+    return this.strCache[s];
+  }
+
+  interElementAttributes(el: ElementAttributes) {
+    el.tagName = this.inter(el.tagName);
+    el.prefix = this.inter(el.prefix);
+    el.localName = this.inter(el.localName);
   }
 
   startDocument() {
@@ -20,6 +34,7 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
   }
 
   startElement(namespaceURI: string, localName: string, qName: string, attrs: ElementAttributes) {
+    this.interElementAttributes(attrs);
     const doc = this.doc;
     const el = doc.createElementNS(namespaceURI, qName || localName);
     const len = attrs.length;
