@@ -4,6 +4,7 @@ var stringLength = 0;
 var stringCard = 0;
 
 export function intern(s: string): string {
+  return s;
   stringCount += 1;
   if (stringCount % 100_000 == 0) {
     console.log(`string hits ${stringCount}`);

@@ -6,10 +6,19 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
   doc: MutableDocument;
   locator: Locator;
   currentElement: Node | null;
+  strCache: Record<string,string>;
 
   constructor() {
     this.cdata = false;
     this.currentElement = null;
+    this.strCache = {};
+  }
+
+  inter(s: string): string {
+    if (stringCache[s] == undefined) {
+      stringCache[s] = s;
+    }
+    return stringCache[s];
   }
 
   startDocument() {
