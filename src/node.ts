@@ -8,13 +8,14 @@ import { serializeToString } from './serializer/serialize';
 import { NodeFilterTS, VisibleNamespaces } from './types';
 import { asChildNode, isAttr, isDocument, isElement, isText } from './utils';
 import { DocumentPositionTS } from './document-position';
+import { NodeListOfImpl } from './node-list-of';
 
 class Relations {
   firstChild: ChildNode | null;
   lastChild: ChildNode | null;
   previousSibling: ChildNode | null;
   nextSibling: ChildNode | null;
-  parentNode: (Node & ParentNode) | null;
+  //parentNode: (Node & ParentNode) | null;
   childNodes: NodeListOf<ChildNode>;
 }
 
@@ -50,6 +51,62 @@ export class NodeImpl extends DummyNode {
       this._relations = new Relations();
     }
     this._relations.firstChild = firstChild;
+  }
+
+  get lastChild(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.lastChild;
+  }
+
+  set lastChild(lastChild: ChildNode | null) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.lastChild = lastChild;
+  }
+
+  get previousSibling(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.previousSibling;
+  }
+
+  set previousSibling(previousSibling: ChildNode | null) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.previousSibling = previousSibling;
+  }
+
+  get nextSibling(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.nextSibling;
+  }
+
+  set nextSibling(nextSibling: ChildNode | null) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.nextSibling = nextSibling;
+  }
+
+  get childNodes(): NodeListOf<ChildNode> {
+    if (this._relations == null) {
+      return new NodeListOfImpl<ChildNode>();
+    }
+    return this._relations.childNodes;
+  }
+
+  set childNodes(childNodes: NodeListOf<ChildNode>) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.childNodes = childNodes;
   }
 
   //readonly ELEMENT_NODE = NodeTypeTS.ELEMENT_NODE;
@@ -136,11 +193,11 @@ export class NodeImpl extends DummyNode {
   nodeType: number;
   nodeName: string;
   //firstChild: ChildNode | null = null;
-  lastChild: ChildNode | null = null;
-  previousSibling: ChildNode | null = null;
-  nextSibling: ChildNode | null = null;
+  //lastChild: ChildNode | null = null;
+  //previousSibling: ChildNode | null = null;
+  //nextSibling: ChildNode | null = null;
   parentNode: Node & ParentNode | null = null;
-  childNodes: NodeListOf<ChildNode> = null as never; // todo: use empty list instead of null maybe
+  //childNodes: NodeListOf<ChildNode> = null as never; // todo: use empty list instead of null maybe
   ownerDocument: Document | null;
   nodeValue: string | null = null;
   namespaceURI: string | null = null;
