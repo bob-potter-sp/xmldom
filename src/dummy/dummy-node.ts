@@ -1,9 +1,6 @@
 import '../types';
 
-import { RegisteredObserver } from '../types';
-
 export abstract class DummyNode implements Node {
-  abstract observers: RegisteredObserver[];
   abstract ownerDocument: Document | null;
   abstract firstChild: ChildNode | null;
   abstract lastChild: ChildNode | null;
@@ -34,9 +31,6 @@ export abstract class DummyNode implements Node {
   abstract DOCUMENT_POSITION_FOLLOWING: number;
   abstract DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC: number;
   abstract DOCUMENT_POSITION_PRECEDING: number;
-
-  abstract addObserver(observer: MutationObserver, options: MutationObserverInit): boolean;
-  abstract delObserver(observer: MutationObserver): void;
 
   get childElementCount(): number {
     throw new Error('Property not implemented.');

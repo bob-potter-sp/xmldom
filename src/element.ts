@@ -50,20 +50,6 @@ export class ElementImpl extends DummyElement {
       return this.insertBefore(newChild, null);
     } else {
       const _newChild = _appendSingleChild(this, asChildNode(newChild));
-
-      // notify observers
-      this.queueMutation({
-        type: 'childList',
-        target: this,
-        addedNodes: new NodeListImpl(_newChild),
-        removedNodes: new NodeListImpl(),
-        previousSibling: _newChild.previousSibling,
-        nextSibling: _newChild.nextSibling,
-        attributeName: null,
-        attributeNamespace: null,
-        oldValue: null,
-      });
-
       return _newChild;
     }
   }
@@ -73,20 +59,6 @@ export class ElementImpl extends DummyElement {
     }
 
     const oldAttr = this.attributes.setNamedItem(newAttr);
-
-    // notify observers
-    this.queueMutation({
-      type: 'attributes',
-      target: this,
-      addedNodes: new NodeListImpl(),
-      removedNodes: new NodeListImpl(),
-      previousSibling: null,
-      nextSibling: null,
-      attributeName: newAttr.nodeName,
-      attributeNamespace: null,
-      oldValue: oldAttr != null ? oldAttr.value : null,
-    });
-
     return oldAttr;
   }
   setAttributeNodeNS(newAttr: Attr) {
@@ -95,39 +67,11 @@ export class ElementImpl extends DummyElement {
     }
 
     const oldAttr = this.attributes.setNamedItemNS(newAttr);
-
-    // notify observers
-    this.queueMutation({
-      type: 'attributes',
-      target: this,
-      addedNodes: new NodeListImpl(),
-      removedNodes: new NodeListImpl(),
-      previousSibling: null,
-      nextSibling: null,
-      attributeName: newAttr.localName,
-      attributeNamespace: newAttr.namespaceURI,
-      oldValue: oldAttr != null ? oldAttr.value : null,
-    });
-
     return oldAttr;
   }
   removeAttributeNode(attr: Attr) {
     // console.log(this == oldAttr.ownerElement)
     const oldAttr = this.attributes.removeNamedItem(attr.nodeName);
-
-    // notify observers
-    this.queueMutation({
-      type: 'attributes',
-      target: this,
-      addedNodes: new NodeListImpl(),
-      removedNodes: new NodeListImpl(),
-      previousSibling: null,
-      nextSibling: null,
-      attributeName: oldAttr.namespaceURI != null ? oldAttr.localName : oldAttr.nodeName,
-      attributeNamespace: oldAttr.namespaceURI,
-      oldValue: oldAttr.value,
-    });
-
     return oldAttr;
   }
 

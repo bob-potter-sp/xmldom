@@ -18,12 +18,8 @@ declare global {
   interface Node {
     lineNumber?: number;
     columnNumber?: number;
-    observers: RegisteredObserver[];
 
     toString(isHtml?: boolean, nodeFilter?: NodeFilterTS): string;
-
-    addObserver(observer: MutationObserver, options: MutationObserverInit): boolean;
-    delObserver(observer: MutationObserver): void;
   }
 
   interface MutationObserver {
