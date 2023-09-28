@@ -7,7 +7,11 @@ export class AttrImpl extends DummyAttr {
   name: string;
   localName: string;
 
-  specified: boolean;
+  //specified: boolean;
+  get specified() {
+    return true;
+  }
+
   ownerElement: Element | null = null;
 
   ownerDocument: Document;
