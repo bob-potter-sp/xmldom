@@ -34,7 +34,8 @@ export class ElementImpl extends DummyElement {
   }
   setAttribute(name: string, value: string) {
     const attr = this.ownerDocument.createAttribute(name);
-    attr.value = attr.nodeValue = '' + value;
+    //attr.value = attr.nodeValue = '' + value;
+    attr.value = attr.nodeValue = value;
     this.setAttributeNode(attr);
   }
   removeAttribute(name: string) {
@@ -92,7 +93,8 @@ export class ElementImpl extends DummyElement {
   }
   setAttributeNS(namespaceURI: string, qualifiedName: string, value: string) {
     const attr = this.ownerDocument.createAttributeNS(namespaceURI, qualifiedName);
-    attr.value = attr.nodeValue = '' + value;
+    //attr.value = attr.nodeValue = '' + value;
+    attr.value = attr.nodeValue = value;
     this.setAttributeNode(attr);
   }
   getAttributeNodeNS(namespaceURI: string, localName: string) {
