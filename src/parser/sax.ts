@@ -120,15 +120,15 @@ function parse(
       switch (source.charAt(tagStart + 1)) {
         case '/':
           end = source.indexOf('>', tagStart + 3);
-          let tagName = getTagName(source.substring(tagStart + 2, end));
+          let tagName = intern(source.substring(tagStart + 2, end));
           const config = parseStack.pop()!;
           if (end < 0) {
-            tagName = getTagName(source.substring(tagStart + 2).replace(/[\s<].*/, ''));
+            tagName = intern(source.substring(tagStart + 2).replace(/[\s<].*/, ''));
             // console.error('#@@@@@@'+tagName)
             errorHandler.error('end tag name: ' + tagName + ' is not complete:' + config.tagName);
             end = tagStart + 1 + tagName.length;
           } else if (tagName.match(/\s</)) {
-            tagName = getTagName(tagName.replace(/[\s<].*/, ''));
+            tagName = intern(tagName.replace(/[\s<].*/, ''));
             errorHandler.error('end tag name: ' + tagName + ' maybe not complete');
             end = tagStart + 1 + tagName.length;
           }
@@ -277,7 +277,7 @@ function parseElementStartPart(
           p = source.indexOf(c, start);
           if (p > 0) {
             value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
-            el.add(getAttrName(attrName), intern(value), start - 1);
+            el.add(intern(attrName), intern(value), start - 1);
             s = S_ATTR_END;
           } else {
             // fatalError: no end quot match
@@ -286,7 +286,7 @@ function parseElementStartPart(
         } else if (s === S_ATTR_NOQUOT_VALUE) {
           value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
           // console.log(attrName,value,start,p)
-          el.add(getAttrName(attrName), intern(value), start);
+          el.add(intern(attrName), intern(value), start);
           // console.dir(el)
           errorHandler.warning('attribute "' + attrName + '" missed start quot(' + c + ')!!');
           start = p + 1;
@@ -342,7 +342,7 @@ function parseElementStartPart(
             }
             if (s === S_ATTR_NOQUOT_VALUE) {
               errorHandler.warning('attribute "' + value + '" missed quot(")!!');
-              el.add(getAttrName(attrName), intern(value.replace(/&#?\w+;/g, entityReplacer)), start);
+              el.add(intern(attrName), intern(value.replace(/&#?\w+;/g, entityReplacer)), start);
             } else {
               if (
                 currentNSMap[''] !== 'http://www.w3.org/1999/xhtml' ||
@@ -376,7 +376,7 @@ function parseElementStartPart(
             case S_ATTR_NOQUOT_VALUE:
               value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
               errorHandler.warning('attribute "' + value + '" missed quot(")!!');
-              el.add(getAttrName(attrName), intern(value), start);
+              el.add(intern(attrName), intern(value), start);
             case S_ATTR_END:
               s = S_TAG_SPACE;
               break;
@@ -403,7 +403,7 @@ function parseElementStartPart(
               ) {
                 errorHandler.warning('attribute "' + attrName + '" missed value!! "' + attrName + '" instead2!!');
               }
-              el.add(getAttrName(attrName), intern(attrName), start);
+              el.add(intern(attrName), intern(attrName), start);
               start = p;
               s = S_ATTR;
               break;
@@ -427,67 +427,11 @@ function parseElementStartPart(
   }
 }
 
-var prefixCache: Map<string,string> = new Map();
-var prefixCount = 0;
-function getPrefix(prefix: string): string {
-  prefixCount += 1;
-  if (prefixCount % 100_000 == 0) {
-    console.log(`prefix hits ${prefixCount}`);
-  }
-  if (!prefixCache.has(prefix)) {
-    prefixCache.set(prefix, prefix);
-    console.log(`prefixCache ${prefixCache.size}`);
-  }
-  return prefixCache.get(prefix)!;
-}
-
-var localNameCache: Map<string,string> = new Map();
-var localNameCount = 0;
-function getLocalName(localName: string): string {
-  localNameCount += 1;
-  if (localNameCount % 100_000 == 0) {
-    console.log(`local name hits ${localNameCount}`);
-  }
-  if (!localNameCache.has(localName)) {
-    localNameCache.set(localName, localName);
-    console.log(`localNameCache ${localNameCache.size}`);
-  }
-  return localNameCache.get(localName)!;
-}
-
-var tagNameCache: Map<string,string> = new Map();
-var tagNameCount = 0;
-function getTagName(tagName: string): string {
-  tagNameCount += 1;
-  if (tagNameCount % 100_000 == 0) {
-    console.log(`tag name hits ${tagNameCount}`);
-  }
-  if (!tagNameCache.has(tagName)) {
-    tagNameCache.set(tagName, tagName);
-    console.log(`tagNameCache ${tagNameCache.size}`);
-  }
-  return tagNameCache.get(tagName)!;
-}
-
-var attrNameCache: Map<string,string> = new Map();
-var attrNameCount = 0;
-function getAttrName(attrName: string): string {
-  attrNameCount += 1;
-  if (attrNameCount % 100_000 == 0) {
-    console.log(`attr name hits ${attrNameCount}`);
-  }
-  if (!attrNameCache.has(attrName)) {
-    attrNameCache.set(attrName, attrName);
-    console.log(`attrNameCache ${attrNameCache.size}`);
-  }
-  return attrNameCache.get(attrName)!;
-}
-
 /**
  * @return true if has new namespace define
  */
 function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSMap: NSMap) {
-  const tagName = getTagName(el.tagName);
+  const tagName = intern(el.tagName);
   let prefix: string | null;
   let localName: string;
   let localNSMap: NSMap | null = null;
@@ -502,11 +446,11 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
 
     let nsPrefix: string | false;
     if (nsp > 0) {
-      prefix = a.prefix = getPrefix(qName.slice(0, nsp));
-      localName = getLocalName(qName.slice(nsp + 1));
+      prefix = a.prefix = intern(qName.slice(0, nsp));
+      localName = intern(qName.slice(nsp + 1));
       nsPrefix = prefix === 'xmlns' && localName;
     } else {
-      localName = getLocalName(qName);
+      localName = intern(qName);
       prefix = null;
       nsPrefix = qName === 'xmlns' && '';
     }
@@ -544,11 +488,11 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
   }
   nsp = tagName.indexOf(':');
   if (nsp > 0) {
-    prefix = el.prefix = getPrefix(tagName.slice(0, nsp));
-    localName = el.localName = getLocalName(tagName.slice(nsp + 1));
+    prefix = el.prefix = intern(tagName.slice(0, nsp));
+    localName = el.localName = intern(tagName.slice(nsp + 1));
   } else {
     prefix = null; // important!!
-    localName = el.localName = getLocalName(tagName);
+    localName = el.localName = intern(tagName);
   }
   // no prefix element has default namespace
   const ns = (el.uri = currentNSMap[prefix || '']);

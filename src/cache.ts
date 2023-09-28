@@ -1,5 +1,7 @@
 var stringCache: Record<string,string> = {};
 var stringCount = 0;
+var stringLength = 0;
+var stringCard = 0;
 
 export function intern(s: string): string {
   stringCount += 1;
@@ -8,7 +10,9 @@ export function intern(s: string): string {
   }
   if (stringCache[s] == undefined || stringCache[s] == null) {
     stringCache[s] = s;
-    console.log(`stringCache ${stringCache.size}`);
+    stringLength += s.length;
+    stringCard += 1;
+    console.log(`stringCache ${stringCard} | ${stringLength}`);
   }
   return stringCache[s];
   /*
