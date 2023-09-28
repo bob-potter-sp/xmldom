@@ -9,7 +9,7 @@ import { NodeTypeTS } from './node-types';
 import { asChildNode, isDocumentFragment, isElement, isProcessingInstruction, isComment } from './utils';
 
 export class ElementImpl extends DummyElement {
-  _nsMap: Record<string, string>;
+  _nsMap: Record<string, string> | null;
   tagName: string;
   attributes: NamedNodeMap;
   localName: string;
@@ -18,7 +18,7 @@ export class ElementImpl extends DummyElement {
   constructor() {
     super();
 
-    this._nsMap = {};
+    this._nsMap = null;
     this.nodeType = NodeTypeTS.ELEMENT_NODE;
   }
 
