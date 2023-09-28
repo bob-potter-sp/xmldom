@@ -108,7 +108,7 @@ function parse(
       if (tagStart < 0) {
         if (!source.substr(start).match(/^\s*$/)) {
           const doc = domBuilder.doc;
-          const text = doc.createTextNode(source.substr(start));
+          const text = doc.createTextNode(intern(source.substr(start)));
           doc.appendChild(text);
           domBuilder.currentElement = text;
         }
