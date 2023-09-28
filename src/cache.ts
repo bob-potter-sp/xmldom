@@ -6,7 +6,7 @@ export function intern(s: string): string {
   if (stringCount % 100_000 == 0) {
     console.log(`string hits ${stringCount}`);
   }
-  if (stringCache[s] == undefined) {
+  if (stringCache[s] == undefined || stringCache[s] == null) {
     stringCache[s] = s;
     console.log(`stringCache ${stringCache.size}`);
   }
