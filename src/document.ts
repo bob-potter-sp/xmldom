@@ -17,6 +17,7 @@ import { ProcessingInstructionImpl } from './processing-instruction';
 import { TextImpl } from './text';
 import { MutableChildNode } from './types';
 import { asChildNode, asHTMLElement, isDocumentFragment, isElement } from './utils';
+import { intern } from './cache';
 
 export class DocumentImpl extends DummyDocument {
   implementation: DOMImplementation;
@@ -177,8 +178,8 @@ export class DocumentImpl extends DummyDocument {
     node.tagName = qualifiedName;
     node.namespaceURI = namespaceURI;
     if (pl.length === 2) {
-      node.prefix = pl[0];
-      node.localName = pl[1];
+      node.prefix = intern(pl[0]);
+      node.localName = intern(pl[1]);
     } else {
       // el.prefix = null;
       node.localName = qualifiedName;
@@ -196,8 +197,8 @@ export class DocumentImpl extends DummyDocument {
     node.namespaceURI = namespaceURI;
     //node.specified = true;
     if (pl.length === 2) {
-      node.prefix = pl[0];
-      node.localName = pl[1];
+      node.prefix = intern(pl[0]);
+      node.localName = intern(pl[1]);
     } else {
       // el.prefix = null;
       node.localName = qualifiedName;
