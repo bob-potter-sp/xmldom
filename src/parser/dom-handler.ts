@@ -24,6 +24,10 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
     el.tagName = this.inter(el.tagName);
     el.prefix = this.inter(el.prefix);
     el.localName = this.inter(el.localName);
+    for (let i = 0;i < el.length;i++) {
+      el[i].value = this.inter(el[i].value);
+      el[i].qName = this.inter(el[i].qName);
+    }
   }
 
   startDocument() {
@@ -35,6 +39,7 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
 
   startElement(namespaceURI: string, localName: string, qName: string, attrs: ElementAttributes) {
     this.interElementAttributes(attrs);
+
     const doc = this.doc;
     const el = doc.createElementNS(namespaceURI, qName || localName);
     const len = attrs.length;
