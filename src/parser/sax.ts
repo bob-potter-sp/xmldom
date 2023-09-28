@@ -425,6 +425,17 @@ function parseElementStartPart(
     p++;
   }
 }
+
+var prefixCache: Map<string,string> = new Map();
+
+function getPrefix(prefix: string): string {
+  if (!prefixCache.has(prefix)) {
+    prefixCache.set(prefix, prefix);
+    console.log(`prefixCache ${prefixCache.size}`);
+  }
+  return prefixCache.get(prefix)!;
+}
+
 /**
  * @return true if has new namespace define
  */
@@ -444,7 +455,7 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
 
     let nsPrefix: string | false;
     if (nsp > 0) {
-      prefix = a.prefix = qName.slice(0, nsp);
+      prefix = a.prefix = getPrefix(qName.slice(0, nsp));
       localName = qName.slice(nsp + 1);
       nsPrefix = prefix === 'xmlns' && localName;
     } else {
