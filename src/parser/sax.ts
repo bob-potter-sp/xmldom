@@ -119,15 +119,15 @@ function parse(
       switch (source.charAt(tagStart + 1)) {
         case '/':
           end = source.indexOf('>', tagStart + 3);
-          let tagName = source.substring(tagStart + 2, end);
+          let tagName = getTagName(source.substring(tagStart + 2, end));
           const config = parseStack.pop()!;
           if (end < 0) {
-            tagName = source.substring(tagStart + 2).replace(/[\s<].*/, '');
+            tagName = getTagName(source.substring(tagStart + 2).replace(/[\s<].*/, ''));
             // console.error('#@@@@@@'+tagName)
             errorHandler.error('end tag name: ' + tagName + ' is not complete:' + config.tagName);
             end = tagStart + 1 + tagName.length;
           } else if (tagName.match(/\s</)) {
-            tagName = tagName.replace(/[\s<].*/, '');
+            tagName = getTagName(tagName.replace(/[\s<].*/, ''));
             errorHandler.error('end tag name: ' + tagName + ' maybe not complete');
             end = tagStart + 1 + tagName.length;
           }
@@ -444,7 +444,7 @@ var localNameCache: Map<string,string> = new Map();
 var localNameCount = 0;
 function getLocalName(localName: string): string {
   localNameCount += 1;
-  if (localNameCount % 10_000 == 0) {
+  if (localNameCount % 100_000 == 0) {
     console.log(`local name hits ${localNameCount}`);
   }
   if (!localNameCache.has(localName)) {
@@ -454,11 +454,25 @@ function getLocalName(localName: string): string {
   return localNameCache.get(localName)!;
 }
 
+var tagNameCache: Map<string,string> = new Map();
+var tagNameCount = 0;
+function getTagName(tagName: string): string {
+  tagNameCount += 1;
+  if (tagNameCount % 100_000 == 0) {
+    console.log(`tag name hits ${tagNameCount}`);
+  }
+  if (!tagNameCache.has(tagName)) {
+    tagNameCache.set(tagName, tagName);
+    console.log(`tagNameCache ${tagNameCache.size}`);
+  }
+  return tagNameCache.get(tagName)!;
+}
+
 /**
  * @return true if has new namespace define
  */
 function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSMap: NSMap) {
-  const tagName = el.tagName;
+  const tagName = getTagName(el.tagName);
   let prefix: string | null;
   let localName: string;
   let localNSMap: NSMap | null = null;
