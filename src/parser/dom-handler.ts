@@ -13,20 +13,20 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
     this.currentElement = null;
   }
 
-  inter(s: string): string {
+  intern(s: string): string {
     if (this.strCache[s] == undefined) {
       this.strCache[s] = s;
     }
     return this.strCache[s];
   }
 
-  interElementAttributes(el: ElementAttributes) {
-    el.tagName = this.inter(el.tagName);
-    el.prefix = this.inter(el.prefix);
-    el.localName = this.inter(el.localName);
+  internElementAttributes(el: ElementAttributes) {
+    el.tagName = this.intern(el.tagName);
+    el.prefix = this.intern(el.prefix);
+    el.localName = this.intern(el.localName);
     for (let i = 0;i < el.length;i++) {
-      el[i].value = this.inter(el[i].value);
-      el[i].qName = this.inter(el[i].qName);
+      el[i].value = this.intern(el[i].value);
+      el[i].qName = this.intern(el[i].qName);
     }
   }
 
@@ -38,7 +38,7 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
   }
 
   startElement(namespaceURI: string, localName: string, qName: string, attrs: ElementAttributes) {
-    this.interElementAttributes(attrs);
+    this.internElementAttributes(attrs);
 
     const doc = this.doc;
     const el = doc.createElementNS(namespaceURI, qName || localName);
@@ -91,7 +91,7 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
     // empty
   }
   characters(chars: string, start: number, length: number) {
-    chars = chars.substr(start, length);
+    chars = this.intern(chars.substr(start, length));
 
     // console.log(chars)
     if (chars) {
