@@ -18,7 +18,7 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
     if (this.strCache[s] == undefined) {
       this.strCache[s] = s;
     }
-    return strCache[s];
+    return this.strCache[s];
   }
 
   startDocument() {
