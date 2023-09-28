@@ -1,5 +1,6 @@
 import { DOMHandler, ElementAttributes, EntityMap, EntityReplacer, ErrorHandler, Locator, NSMap } from '../types';
 import { ElementAttributesImpl } from './element-attributes';
+import { intern } from '../cache';
 
 // S_TAG,	S_ATTR,	S_EQ,	S_ATTR_NOQUOT_VALUE
 // S_ATTR_SPACE,	S_ATTR_END,	S_TAG_SPACE, S_TAG_CLOSE
@@ -276,7 +277,7 @@ function parseElementStartPart(
           p = source.indexOf(c, start);
           if (p > 0) {
             value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
-            el.add(getAttrName(attrName), value, start - 1);
+            el.add(getAttrName(attrName), intern(value), start - 1);
             s = S_ATTR_END;
           } else {
             // fatalError: no end quot match
@@ -285,7 +286,7 @@ function parseElementStartPart(
         } else if (s === S_ATTR_NOQUOT_VALUE) {
           value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
           // console.log(attrName,value,start,p)
-          el.add(getAttrName(attrName), value, start);
+          el.add(getAttrName(attrName), intern(value), start);
           // console.dir(el)
           errorHandler.warning('attribute "' + attrName + '" missed start quot(' + c + ')!!');
           start = p + 1;
@@ -341,7 +342,7 @@ function parseElementStartPart(
             }
             if (s === S_ATTR_NOQUOT_VALUE) {
               errorHandler.warning('attribute "' + value + '" missed quot(")!!');
-              el.add(getAttrName(attrName), value.replace(/&#?\w+;/g, entityReplacer), start);
+              el.add(getAttrName(attrName), intern(value.replace(/&#?\w+;/g, entityReplacer)), start);
             } else {
               if (
                 currentNSMap[''] !== 'http://www.w3.org/1999/xhtml' ||
@@ -375,7 +376,7 @@ function parseElementStartPart(
             case S_ATTR_NOQUOT_VALUE:
               value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
               errorHandler.warning('attribute "' + value + '" missed quot(")!!');
-              el.add(getAttrName(attrName), value, start);
+              el.add(getAttrName(attrName), intern(value), start);
             case S_ATTR_END:
               s = S_TAG_SPACE;
               break;
@@ -402,7 +403,7 @@ function parseElementStartPart(
               ) {
                 errorHandler.warning('attribute "' + attrName + '" missed value!! "' + attrName + '" instead2!!');
               }
-              el.add(getAttrName(attrName), attrName, start);
+              el.add(getAttrName(attrName), intern(attrName), start);
               start = p;
               s = S_ATTR;
               break;
