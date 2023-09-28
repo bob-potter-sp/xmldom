@@ -427,8 +427,13 @@ function parseElementStartPart(
 }
 
 var prefixCache: Map<string,string> = new Map();
+var prefixCount = 0;
 
 function getPrefix(prefix: string): string {
+  prefixCount += 1;
+  if (prefixCount % 1000 == 0) {
+    console.log(`prefix hits ${prefixCount}`);
+  }
   if (!prefixCache.has(prefix)) {
     prefixCache.set(prefix, prefix);
     console.log(`prefixCache ${prefixCache.size}`);
@@ -497,7 +502,7 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
   }
   nsp = tagName.indexOf(':');
   if (nsp > 0) {
-    prefix = el.prefix = tagName.slice(0, nsp);
+    prefix = el.prefix = getPrefix(tagName.slice(0, nsp));
     localName = el.localName = tagName.slice(nsp + 1);
   } else {
     prefix = null; // important!!
