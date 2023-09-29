@@ -3,7 +3,7 @@ import '../types';
 import { NodeImpl } from '../node';
 
 export abstract class DummyElement extends NodeImpl implements Element, HTMLElement {
-  abstract _nsMap: Record<string, string>;
+  abstract _nsMap: Record<string, string> | null;
   abstract attributes: NamedNodeMap;
 
   abstract tagName: string;

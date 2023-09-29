@@ -9,7 +9,7 @@ import { NodeTypeTS } from './node-types';
 import { asChildNode, isDocumentFragment, isElement, isProcessingInstruction, isComment } from './utils';
 
 export class ElementImpl extends DummyElement {
-  _nsMap: Record<string, string>;
+  _nsMap: Record<string, string> | null;
   tagName: string;
   attributes: NamedNodeMap;
   localName: string;
@@ -18,7 +18,7 @@ export class ElementImpl extends DummyElement {
   constructor() {
     super();
 
-    this._nsMap = {};
+    this._nsMap = null;
     this.nodeType = NodeTypeTS.ELEMENT_NODE;
   }
 
@@ -34,7 +34,8 @@ export class ElementImpl extends DummyElement {
   }
   setAttribute(name: string, value: string) {
     const attr = this.ownerDocument.createAttribute(name);
-    attr.value = attr.nodeValue = '' + value;
+    //attr.value = attr.nodeValue = '' + value;
+    attr.value = attr.nodeValue = value;
     this.setAttributeNode(attr);
   }
   removeAttribute(name: string) {
@@ -50,20 +51,6 @@ export class ElementImpl extends DummyElement {
       return this.insertBefore(newChild, null);
     } else {
       const _newChild = _appendSingleChild(this, asChildNode(newChild));
-
-      // notify observers
-      this.queueMutation({
-        type: 'childList',
-        target: this,
-        addedNodes: new NodeListImpl(_newChild),
-        removedNodes: new NodeListImpl(),
-        previousSibling: _newChild.previousSibling,
-        nextSibling: _newChild.nextSibling,
-        attributeName: null,
-        attributeNamespace: null,
-        oldValue: null,
-      });
-
       return _newChild;
     }
   }
@@ -73,20 +60,6 @@ export class ElementImpl extends DummyElement {
     }
 
     const oldAttr = this.attributes.setNamedItem(newAttr);
-
-    // notify observers
-    this.queueMutation({
-      type: 'attributes',
-      target: this,
-      addedNodes: new NodeListImpl(),
-      removedNodes: new NodeListImpl(),
-      previousSibling: null,
-      nextSibling: null,
-      attributeName: newAttr.nodeName,
-      attributeNamespace: null,
-      oldValue: oldAttr != null ? oldAttr.value : null,
-    });
-
     return oldAttr;
   }
   setAttributeNodeNS(newAttr: Attr) {
@@ -95,39 +68,11 @@ export class ElementImpl extends DummyElement {
     }
 
     const oldAttr = this.attributes.setNamedItemNS(newAttr);
-
-    // notify observers
-    this.queueMutation({
-      type: 'attributes',
-      target: this,
-      addedNodes: new NodeListImpl(),
-      removedNodes: new NodeListImpl(),
-      previousSibling: null,
-      nextSibling: null,
-      attributeName: newAttr.localName,
-      attributeNamespace: newAttr.namespaceURI,
-      oldValue: oldAttr != null ? oldAttr.value : null,
-    });
-
     return oldAttr;
   }
   removeAttributeNode(attr: Attr) {
     // console.log(this == oldAttr.ownerElement)
     const oldAttr = this.attributes.removeNamedItem(attr.nodeName);
-
-    // notify observers
-    this.queueMutation({
-      type: 'attributes',
-      target: this,
-      addedNodes: new NodeListImpl(),
-      removedNodes: new NodeListImpl(),
-      previousSibling: null,
-      nextSibling: null,
-      attributeName: oldAttr.namespaceURI != null ? oldAttr.localName : oldAttr.nodeName,
-      attributeNamespace: oldAttr.namespaceURI,
-      oldValue: oldAttr.value,
-    });
-
     return oldAttr;
   }
 
@@ -148,7 +93,8 @@ export class ElementImpl extends DummyElement {
   }
   setAttributeNS(namespaceURI: string, qualifiedName: string, value: string) {
     const attr = this.ownerDocument.createAttributeNS(namespaceURI, qualifiedName);
-    attr.value = attr.nodeValue = '' + value;
+    //attr.value = attr.nodeValue = '' + value;
+    attr.value = attr.nodeValue = value;
     this.setAttributeNode(attr);
   }
   getAttributeNodeNS(namespaceURI: string, localName: string) {

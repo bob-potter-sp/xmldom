@@ -17,6 +17,7 @@ import { ProcessingInstructionImpl } from './processing-instruction';
 import { TextImpl } from './text';
 import { MutableChildNode } from './types';
 import { asChildNode, asHTMLElement, isDocumentFragment, isElement } from './utils';
+import { intern } from './cache';
 
 export class DocumentImpl extends DummyDocument {
   implementation: DOMImplementation;
@@ -49,20 +50,6 @@ export class DocumentImpl extends DummyDocument {
 
       const _newChild = _insertBefore(this, asChildNode(newChild), refChild == null ? null : asChildNode(refChild));
       (asChildNode(newChild) as MutableChildNode).ownerDocument = this;
-
-      // notify observers
-      this.queueMutation({
-        type: 'childList',
-        target: this,
-        addedNodes: new NodeListImpl(_newChild),
-        removedNodes: new NodeListImpl(),
-        previousSibling: _newChild.previousSibling,
-        nextSibling: _newChild.nextSibling,
-        attributeName: null,
-        attributeNamespace: null,
-        oldValue: null,
-      });
-
       return _newChild;
     }
   }
@@ -170,7 +157,7 @@ export class DocumentImpl extends DummyDocument {
     node.name = name;
     node.nodeName = name;
     node.localName = name;
-    node.specified = true;
+    //node.specified = true;
     return node;
   }
   createEntityReference(name: string) {
@@ -191,8 +178,8 @@ export class DocumentImpl extends DummyDocument {
     node.tagName = qualifiedName;
     node.namespaceURI = namespaceURI;
     if (pl.length === 2) {
-      node.prefix = pl[0];
-      node.localName = pl[1];
+      node.prefix = intern(pl[0]);
+      node.localName = intern(pl[1]);
     } else {
       // el.prefix = null;
       node.localName = qualifiedName;
@@ -208,10 +195,10 @@ export class DocumentImpl extends DummyDocument {
     node.nodeName = qualifiedName;
     node.name = qualifiedName;
     node.namespaceURI = namespaceURI;
-    node.specified = true;
+    //node.specified = true;
     if (pl.length === 2) {
-      node.prefix = pl[0];
-      node.localName = pl[1];
+      node.prefix = intern(pl[0]);
+      node.localName = intern(pl[1]);
     } else {
       // el.prefix = null;
       node.localName = qualifiedName;

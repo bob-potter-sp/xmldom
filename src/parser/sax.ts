@@ -1,5 +1,6 @@
 import { DOMHandler, ElementAttributes, EntityMap, EntityReplacer, ErrorHandler, Locator, NSMap } from '../types';
 import { ElementAttributesImpl } from './element-attributes';
+import { intern } from '../cache';
 
 // S_TAG,	S_ATTR,	S_EQ,	S_ATTR_NOQUOT_VALUE
 // S_ATTR_SPACE,	S_ATTR_END,	S_TAG_SPACE, S_TAG_CLOSE
@@ -107,7 +108,7 @@ function parse(
       if (tagStart < 0) {
         if (!source.substr(start).match(/^\s*$/)) {
           const doc = domBuilder.doc;
-          const text = doc.createTextNode(source.substr(start));
+          const text = doc.createTextNode(intern(source.substr(start)));
           doc.appendChild(text);
           domBuilder.currentElement = text;
         }
@@ -119,15 +120,15 @@ function parse(
       switch (source.charAt(tagStart + 1)) {
         case '/':
           end = source.indexOf('>', tagStart + 3);
-          let tagName = source.substring(tagStart + 2, end);
+          let tagName = intern(source.substring(tagStart + 2, end));
           const config = parseStack.pop()!;
           if (end < 0) {
-            tagName = source.substring(tagStart + 2).replace(/[\s<].*/, '');
+            tagName = intern(source.substring(tagStart + 2).replace(/[\s<].*/, ''));
             // console.error('#@@@@@@'+tagName)
             errorHandler.error('end tag name: ' + tagName + ' is not complete:' + config.tagName);
             end = tagStart + 1 + tagName.length;
           } else if (tagName.match(/\s</)) {
-            tagName = tagName.replace(/[\s<].*/, '');
+            tagName = intern(tagName.replace(/[\s<].*/, ''));
             errorHandler.error('end tag name: ' + tagName + ' maybe not complete');
             end = tagStart + 1 + tagName.length;
           }
@@ -276,7 +277,7 @@ function parseElementStartPart(
           p = source.indexOf(c, start);
           if (p > 0) {
             value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
-            el.add(attrName, value, start - 1);
+            el.add(intern(attrName), intern(value), start - 1);
             s = S_ATTR_END;
           } else {
             // fatalError: no end quot match
@@ -285,7 +286,7 @@ function parseElementStartPart(
         } else if (s === S_ATTR_NOQUOT_VALUE) {
           value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
           // console.log(attrName,value,start,p)
-          el.add(attrName, value, start);
+          el.add(intern(attrName), intern(value), start);
           // console.dir(el)
           errorHandler.warning('attribute "' + attrName + '" missed start quot(' + c + ')!!');
           start = p + 1;
@@ -341,7 +342,7 @@ function parseElementStartPart(
             }
             if (s === S_ATTR_NOQUOT_VALUE) {
               errorHandler.warning('attribute "' + value + '" missed quot(")!!');
-              el.add(attrName, value.replace(/&#?\w+;/g, entityReplacer), start);
+              el.add(intern(attrName), intern(value.replace(/&#?\w+;/g, entityReplacer)), start);
             } else {
               if (
                 currentNSMap[''] !== 'http://www.w3.org/1999/xhtml' ||
@@ -375,7 +376,7 @@ function parseElementStartPart(
             case S_ATTR_NOQUOT_VALUE:
               value = source.slice(start, p).replace(/&#?\w+;/g, entityReplacer);
               errorHandler.warning('attribute "' + value + '" missed quot(")!!');
-              el.add(attrName, value, start);
+              el.add(intern(attrName), intern(value), start);
             case S_ATTR_END:
               s = S_TAG_SPACE;
               break;
@@ -402,7 +403,7 @@ function parseElementStartPart(
               ) {
                 errorHandler.warning('attribute "' + attrName + '" missed value!! "' + attrName + '" instead2!!');
               }
-              el.add(attrName, attrName, start);
+              el.add(intern(attrName), intern(attrName), start);
               start = p;
               s = S_ATTR;
               break;
@@ -425,11 +426,12 @@ function parseElementStartPart(
     p++;
   }
 }
+
 /**
  * @return true if has new namespace define
  */
 function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSMap: NSMap) {
-  const tagName = el.tagName;
+  const tagName = intern(el.tagName);
   let prefix: string | null;
   let localName: string;
   let localNSMap: NSMap | null = null;
@@ -444,11 +446,11 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
 
     let nsPrefix: string | false;
     if (nsp > 0) {
-      prefix = a.prefix = qName.slice(0, nsp);
-      localName = qName.slice(nsp + 1);
+      prefix = a.prefix = intern(qName.slice(0, nsp));
+      localName = intern(qName.slice(nsp + 1));
       nsPrefix = prefix === 'xmlns' && localName;
     } else {
-      localName = qName;
+      localName = intern(qName);
       prefix = null;
       nsPrefix = qName === 'xmlns' && '';
     }
@@ -486,11 +488,11 @@ function appendElement(el: ElementAttributes, domBuilder: DOMHandler, currentNSM
   }
   nsp = tagName.indexOf(':');
   if (nsp > 0) {
-    prefix = el.prefix = tagName.slice(0, nsp);
-    localName = el.localName = tagName.slice(nsp + 1);
+    prefix = el.prefix = intern(tagName.slice(0, nsp));
+    localName = el.localName = intern(tagName.slice(nsp + 1));
   } else {
     prefix = null; // important!!
-    localName = el.localName = tagName;
+    localName = el.localName = intern(tagName);
   }
   // no prefix element has default namespace
   const ns = (el.uri = currentNSMap[prefix || '']);

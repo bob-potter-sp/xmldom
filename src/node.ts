@@ -2,14 +2,22 @@ import './types';
 
 import { _insertBefore, _removeChild } from './document-utils';
 import { DummyNode } from './dummy/dummy-node';
-import { MutationRecordImpl } from './mutation/mutation-record';
-import { NodeListImpl } from './node-list';
 import { NodeTypeTS } from './node-types';
 import { cloneNode } from './node-utils';
 import { serializeToString } from './serializer/serialize';
-import { NodeFilterTS, RegisteredObserver, VisibleNamespaces } from './types';
+import { NodeFilterTS, VisibleNamespaces } from './types';
 import { asChildNode, isAttr, isDocument, isElement, isText } from './utils';
 import { DocumentPositionTS } from './document-position';
+import { NodeListOfImpl } from './node-list-of';
+
+class Relations {
+  firstChild: ChildNode | null;
+  lastChild: ChildNode | null;
+  previousSibling: ChildNode | null;
+  nextSibling: ChildNode | null;
+  //parentNode: (Node & ParentNode) | null;
+  childNodes: NodeListOf<ChildNode>;
+}
 
 /**
  * @see http://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#ID-1950641247
@@ -29,18 +37,132 @@ export class NodeImpl extends DummyNode {
   static readonly DOCUMENT_FRAGMENT_NODE = NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
   static readonly NOTATION_NODE = NodeTypeTS.NOTATION_NODE;
 
-  readonly ELEMENT_NODE = NodeTypeTS.ELEMENT_NODE;
-  readonly ATTRIBUTE_NODE = NodeTypeTS.ATTRIBUTE_NODE;
-  readonly TEXT_NODE = NodeTypeTS.TEXT_NODE;
-  readonly CDATA_SECTION_NODE = NodeTypeTS.CDATA_SECTION_NODE;
-  readonly ENTITY_REFERENCE_NODE = NodeTypeTS.ENTITY_REFERENCE_NODE;
-  readonly ENTITY_NODE = NodeTypeTS.ENTITY_NODE;
-  readonly PROCESSING_INSTRUCTION_NODE = NodeTypeTS.PROCESSING_INSTRUCTION_NODE;
-  readonly COMMENT_NODE = NodeTypeTS.COMMENT_NODE;
-  readonly DOCUMENT_NODE = NodeTypeTS.DOCUMENT_NODE;
-  readonly DOCUMENT_TYPE_NODE = NodeTypeTS.DOCUMENT_TYPE_NODE;
-  readonly DOCUMENT_FRAGMENT_NODE = NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
-  readonly NOTATION_NODE = NodeTypeTS.NOTATION_NODE;
+  _relations: Relations | null = null;
+
+  get firstChild(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.firstChild;
+  }
+
+  set firstChild(firstChild: ChildNode | null) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.firstChild = firstChild;
+  }
+
+  get lastChild(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.lastChild;
+  }
+
+  set lastChild(lastChild: ChildNode | null) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.lastChild = lastChild;
+  }
+
+  get previousSibling(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.previousSibling;
+  }
+
+  set previousSibling(previousSibling: ChildNode | null) {
+    if (this._relations == null) {
+      if (previousSibling == null) {
+        return;
+      }
+      this._relations = new Relations();
+    }
+    this._relations.previousSibling = previousSibling;
+  }
+
+  get nextSibling(): ChildNode | null {
+    if (this._relations == null) {
+      return null;
+    }
+    return this._relations.nextSibling;
+  }
+
+  set nextSibling(nextSibling: ChildNode | null) {
+    if (this._relations == null) {
+      if (nextSibling == null) {
+        return;
+      }
+      this._relations = new Relations();
+    }
+    this._relations.nextSibling = nextSibling;
+  }
+
+  get childNodes(): NodeListOf<ChildNode> {
+    if (this._relations == null) {
+      return new NodeListOfImpl<ChildNode>();
+    }
+    return this._relations.childNodes;
+  }
+
+  set childNodes(childNodes: NodeListOf<ChildNode>) {
+    if (this._relations == null) {
+      this._relations = new Relations();
+    }
+    this._relations.childNodes = childNodes;
+  }
+
+  //readonly ELEMENT_NODE = NodeTypeTS.ELEMENT_NODE;
+  get ELEMENT_NODE() {
+    return NodeTypeTS.ELEMENT_NODE;
+  }
+  //readonly ATTRIBUTE_NODE = NodeTypeTS.ATTRIBUTE_NODE;
+  get ATTRIBUTE_NODE() {
+    return NodeTypeTS.ATTRIBUTE_NODE;
+  }
+  //readonly TEXT_NODE = NodeTypeTS.TEXT_NODE;
+  get TEXT_NODE() {
+    return NodeTypeTS.TEXT_NODE;
+  }
+  //readonly CDATA_SECTION_NODE = NodeTypeTS.CDATA_SECTION_NODE;
+  get CDATA_SECTION_NODE() {
+    return NodeTypeTS.CDATA_SECTION_NODE;
+  }
+  //readonly ENTITY_REFERENCE_NODE = NodeTypeTS.ENTITY_REFERENCE_NODE;
+  get ENTITY_REFERENCE_NODE() {
+   return NodeTypeTS.ENTITY_REFERENCE_NODE;
+  }
+  //readonly ENTITY_NODE = NodeTypeTS.ENTITY_NODE;
+  get ENTITY_NODE() {
+    return NodeTypeTS.ENTITY_NODE;
+  }
+  //readonly PROCESSING_INSTRUCTION_NODE = NodeTypeTS.PROCESSING_INSTRUCTION_NODE;
+  get PROCESSING_INSTRUCTION_NODE() {
+    return NodeTypeTS.PROCESSING_INSTRUCTION_NODE;
+  }
+  //readonly COMMENT_NODE = NodeTypeTS.COMMENT_NODE;
+  get COMMENT_NODE() {
+   return NodeTypeTS.COMMENT_NODE;
+  }
+  //readonly DOCUMENT_NODE = NodeTypeTS.DOCUMENT_NODE;
+  get DOCUMENT_NODE() {
+   return NodeTypeTS.DOCUMENT_NODE;
+  }
+  //readonly DOCUMENT_TYPE_NODE = NodeTypeTS.DOCUMENT_TYPE_NODE;
+  get DOCUMENT_TYPE_NODE() {
+   return NodeTypeTS.DOCUMENT_TYPE_NODE;
+  }
+  //readonly DOCUMENT_FRAGMENT_NODE = NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
+  get DOCUMENT_FRAGMENT_NODE() {
+   return NodeTypeTS.DOCUMENT_FRAGMENT_NODE;
+  }
+  //readonly NOTATION_NODE = NodeTypeTS.NOTATION_NODE;
+  get NOTATION_NODE() {
+   return NodeTypeTS.NOTATION_NODE;
+  }
 
   static readonly DOCUMENT_POSITION_CONTAINED_BY = DocumentPositionTS.CONTAINED_BY;
   static readonly DOCUMENT_POSITION_CONTAINS = DocumentPositionTS.CONTAINS;
@@ -49,23 +171,39 @@ export class NodeImpl extends DummyNode {
   static readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
   static readonly DOCUMENT_POSITION_PRECEDING = DocumentPositionTS.PRECEDING;
 
-  readonly DOCUMENT_POSITION_CONTAINED_BY = DocumentPositionTS.CONTAINED_BY;
-  readonly DOCUMENT_POSITION_CONTAINS = DocumentPositionTS.CONTAINS;
-  readonly DOCUMENT_POSITION_DISCONNECTED = DocumentPositionTS.DISCONNECTED;
-  readonly DOCUMENT_POSITION_FOLLOWING = DocumentPositionTS.FOLLOWING;
-  readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
-  readonly DOCUMENT_POSITION_PRECEDING = DocumentPositionTS.PRECEDING;
-
-  observers: RegisteredObserver[] = [];
+  //readonly DOCUMENT_POSITION_CONTAINED_BY = DocumentPositionTS.CONTAINED_BY;
+  get DOCUMENT_POSITION_CONTAINED_BY() {
+    return DocumentPositionTS.CONTAINED_BY;
+  }
+  //readonly DOCUMENT_POSITION_CONTAINS = DocumentPositionTS.CONTAINS;
+  get DOCUMENT_POSITION_CONTAINS() {
+   return DocumentPositionTS.CONTAINS;
+  }
+  //readonly DOCUMENT_POSITION_DISCONNECTED = DocumentPositionTS.DISCONNECTED;
+  get DOCUMENT_POSITION_DISCONNECTED() {
+   return DocumentPositionTS.DISCONNECTED;
+  }
+  //readonly DOCUMENT_POSITION_FOLLOWING = DocumentPositionTS.FOLLOWING;
+  get DOCUMENT_POSITION_FOLLOWING() {
+   return DocumentPositionTS.FOLLOWING;
+  }
+  //readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
+  get DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC() {
+   return DocumentPositionTS.IMPLEMENTATION_SPECIFIC;
+  }
+  //readonly DOCUMENT_POSITION_PRECEDING = DocumentPositionTS.PRECEDING;
+  get DOCUMENT_POSITION_PRECEDING() {
+   return DocumentPositionTS.PRECEDING;
+  }
 
   nodeType: number;
   nodeName: string;
-  firstChild: ChildNode | null = null;
-  lastChild: ChildNode | null = null;
-  previousSibling: ChildNode | null = null;
-  nextSibling: ChildNode | null = null;
+  //firstChild: ChildNode | null = null;
+  //lastChild: ChildNode | null = null;
+  //previousSibling: ChildNode | null = null;
+  //nextSibling: ChildNode | null = null;
   parentNode: Node & ParentNode | null = null;
-  childNodes: NodeListOf<ChildNode> = null as never; // todo: use empty list instead of null maybe
+  //childNodes: NodeListOf<ChildNode> = null as never; // todo: use empty list instead of null maybe
   ownerDocument: Document | null;
   nodeValue: string | null = null;
   namespaceURI: string | null = null;
@@ -73,75 +211,6 @@ export class NodeImpl extends DummyNode {
 
   lineNumber?: number;
   columnNumber?: number;
-
-  addObserver(observer: MutationObserver, options: MutationObserverInit): boolean {
-    for (const registered of this.observers) {
-      if (registered.observer === observer) {
-        // fixme: this is not according to the spec
-        registered.options = options;
-        return true;
-      }
-    }
-
-    this.observers.push({ observer, options });
-    return false;
-  }
-  delObserver(observer: MutationObserver): void {
-    this.observers = this.observers.filter((registered) => registered.observer !== observer);
-  }
-
-  queueMutation(r: MutationRecord) {
-    const type = r.type;
-    const name = r.attributeName;
-    const namespace = r.attributeNamespace;
-    const oldValue = r.oldValue;
-    const target = r.target;
-
-    const interestedObservers = new Map<MutationObserver, null | string>();
-    const nodes = inclusiveAncestors(this);
-
-    nodes.forEach((node) => {
-      node.observers.forEach((registered) => {
-        const options = registered.options;
-
-        // https://dom.spec.whatwg.org/#queueing-a-mutation-record
-        if (
-          !(node !== target && options.subtree === false) &&
-          !(type === 'attributes' && options.attributes !== true) &&
-          !(
-            type === 'attributes' &&
-            options.attributeFilter !== undefined &&
-            ((name != null && !options.attributeFilter.includes(name)) || namespace != null)
-          ) &&
-          !(type === 'characterData' && options.characterData !== true) &&
-          !(type === 'childList' && options.childList === false)
-        ) {
-          const mo = registered.observer;
-
-          if (!interestedObservers.has(mo)) {
-            interestedObservers.set(mo, null);
-          }
-
-          if (
-            (type === 'attributes' && options.attributeOldValue === true) ||
-            (type === 'characterData' && options.characterDataOldValue === true)
-          ) {
-            interestedObservers.set(mo, oldValue);
-          }
-        }
-      });
-    });
-
-    interestedObservers.forEach((mappedOldValue, observer) => {
-      const record = new MutationRecordImpl(r);
-      record.oldValue = mappedOldValue;
-
-      observer.queueRecord(record);
-
-      // fixme: not entirely according to spec
-      process.nextTick(() => observer.notify());
-    });
-  }
 
   // value: string | null = null; // todo: what is the purpose of this
 
@@ -151,20 +220,6 @@ export class NodeImpl extends DummyNode {
   insertBefore<T extends Node>(newChild: T, refChild: Node | null): T {
     // raises
     const _newChild = _insertBefore(this, asChildNode(newChild), refChild == null ? null : asChildNode(refChild));
-
-    // notify observers
-    this.queueMutation({
-      type: 'childList',
-      target: this,
-      addedNodes: new NodeListImpl(_newChild),
-      removedNodes: new NodeListImpl(),
-      previousSibling: _newChild.previousSibling,
-      nextSibling: _newChild.nextSibling,
-      attributeName: null,
-      attributeNamespace: null,
-      oldValue: null,
-    });
-
     return _newChild;
   }
   replaceChild<T extends Node>(newChild: Node, oldChild: T): T {
@@ -174,20 +229,6 @@ export class NodeImpl extends DummyNode {
   }
   removeChild<T extends Node>(oldChild: T): T {
     const _oldChild = _removeChild(this, oldChild);
-
-    // notify observers
-    this.queueMutation({
-      type: 'childList',
-      target: this,
-      addedNodes: new NodeListImpl(),
-      removedNodes: new NodeListImpl(_oldChild),
-      previousSibling: _oldChild.previousSibling,
-      nextSibling: _oldChild.nextSibling,
-      attributeName: null,
-      attributeNamespace: null,
-      oldValue: null,
-    });
-
     return _oldChild;
   }
   appendChild<T extends Node>(newChild: T): T {
@@ -345,12 +386,4 @@ export class NodeImpl extends DummyNode {
     return false;
   }
   
-}
-
-function inclusiveAncestors(node: Node): Node[] {
-  if (node.parentNode != null) {
-    return [node, ...inclusiveAncestors(node.parentNode)];
-  } else {
-    return [node];
-  }
 }

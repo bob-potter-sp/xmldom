@@ -30,7 +30,7 @@ export function _onAddAttribute(doc: Document, el: Element, newAttr: Attr) {
   }
 
   const ns = newAttr.namespaceURI;
-  if (ns === 'http://www.w3.org/2000/xmlns/') {
+  if (ns === 'http://www.w3.org/2000/xmlns/' && el._nsMap) {
     // update namespace
     el._nsMap[newAttr.prefix ? newAttr.localName : ''] = newAttr.value;
   }
@@ -41,7 +41,7 @@ export function _onRemoveAttribute(doc: Document, el: Element, newAttr: Attr, _r
   }
 
   const ns = newAttr.namespaceURI;
-  if (ns === 'http://www.w3.org/2000/xmlns/') {
+  if (ns === 'http://www.w3.org/2000/xmlns/' && el._nsMap) {
     // update namespace
     delete el._nsMap[newAttr.prefix ? newAttr.localName : ''];
   }
