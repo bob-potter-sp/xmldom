@@ -6,10 +6,28 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
   doc: MutableDocument;
   locator: Locator;
   currentElement: Node | null;
+  strCache: Record<string,string> = {};
 
   constructor() {
     this.cdata = false;
     this.currentElement = null;
+  }
+
+  intern(s: string): string {
+    if (this.strCache[s] == undefined) {
+      this.strCache[s] = s;
+    }
+    return this.strCache[s];
+  }
+
+  internElementAttributes(el: ElementAttributes) {
+    el.tagName = this.intern(el.tagName);
+    el.prefix = this.intern(el.prefix);
+    el.localName = this.intern(el.localName);
+    for (let i = 0;i < el.length;i++) {
+      el[i].value = this.intern(el[i].value);
+      el[i].qName = this.intern(el[i].qName);
+    }
   }
 
   startDocument() {
@@ -20,6 +38,8 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
   }
 
   startElement(namespaceURI: string, localName: string, qName: string, attrs: ElementAttributes) {
+    this.internElementAttributes(attrs);
+
     const doc = this.doc;
     const el = doc.createElementNS(namespaceURI, qName || localName);
     const len = attrs.length;
@@ -71,7 +91,7 @@ export class DOMHandlerImpl implements DOMHandler, ErrorHandler {
     // empty
   }
   characters(chars: string, start: number, length: number) {
-    chars = chars.substr(start, length);
+    chars = this.intern(chars.substr(start, length));
 
     // console.log(chars)
     if (chars) {

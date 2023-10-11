@@ -8,7 +8,7 @@ declare global {
   type EntityReference = Node;
 
   interface Element {
-    _nsMap: Record<string, string>;
+    _nsMap: Record<string, string> | null;
   }
 
   interface DocumentType {
@@ -18,17 +18,8 @@ declare global {
   interface Node {
     lineNumber?: number;
     columnNumber?: number;
-    observers: RegisteredObserver[];
 
     toString(isHtml?: boolean, nodeFilter?: NodeFilterTS): string;
-
-    addObserver(observer: MutationObserver, options: MutationObserverInit): boolean;
-    delObserver(observer: MutationObserver): void;
-  }
-
-  interface MutationObserver {
-    queueRecord(record: MutationRecord): void;
-    notify(): void;
   }
 }
 
@@ -122,8 +113,3 @@ export interface DOMHandler {
 export type VisibleNamespaces = Array<{ prefix: string | null; namespace: string }>;
 
 export type EntityReplacer = (s: string) => string;
-
-export interface RegisteredObserver {
-  observer: MutationObserver;
-  options: MutationObserverInit;
-}

@@ -49,20 +49,6 @@ export class DocumentImpl extends DummyDocument {
 
       const _newChild = _insertBefore(this, asChildNode(newChild), refChild == null ? null : asChildNode(refChild));
       (asChildNode(newChild) as MutableChildNode).ownerDocument = this;
-
-      // notify observers
-      this.queueMutation({
-        type: 'childList',
-        target: this,
-        addedNodes: new NodeListImpl(_newChild),
-        removedNodes: new NodeListImpl(),
-        previousSibling: _newChild.previousSibling,
-        nextSibling: _newChild.nextSibling,
-        attributeName: null,
-        attributeNamespace: null,
-        oldValue: null,
-      });
-
       return _newChild;
     }
   }
